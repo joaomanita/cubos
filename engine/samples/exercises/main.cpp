@@ -8,7 +8,7 @@
 #include <cubos/engine/voxels/grid.hpp>
 #include <cubos/engine/renderer/point_light.hpp>
 #include <cubos/engine/renderer/environment.hpp>
-
+#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/settings/settings.hpp"
 
 using namespace cubos::engine;
 using namespace cubos::core::ecs;
@@ -52,6 +52,10 @@ static void spawnCamerasSystem(Commands commands, Write<ActiveCameras> camera){
     camera->entities[2] = camera->entities[0];
 }
 
+static void configSystem(Write<Settings> settings){
+    settings->setString("assets.io.path", SAMPLE_ASSETS_FOLDER);
+}
+
 int main(){
     Cubos cubos{};
     cubos.addPlugin(rendererPlugin);
@@ -60,6 +64,7 @@ int main(){
     cubos.startupSystem(spawnLightSystem);
     cubos.startupSystem(setEnvironmentSystem);
     cubos.startupSystem(spawnCamerasSystem);
+    cubos.startupSystem(configSystem).tagged("cubos.settings");
 
     cubos.run();
 }
