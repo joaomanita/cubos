@@ -9,23 +9,32 @@
 #include <cubos/engine/renderer/point_light.hpp>
 #include <cubos/engine/renderer/environment.hpp>
 #include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/settings/settings.hpp"
+#include <cubos/engine/assets/bridges/file.hpp>
+#include <cubos/engine/assets/assets.hpp>
+#include <iostream>
+#include "/home/manita_vm/cubos/cubos/core/include/cubos/core/memory/stream.hpp"
+#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/assets/plugin.hpp"
+#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/voxels/plugin.hpp"
 
 using namespace cubos::engine;
-using namespace cubos::core::ecs;
+using cubos::core::ecs::Commands;
+using cubos::core::ecs::Read;
+using cubos::core::ecs::Write;
+using cubos::core::memory::Stream;
 
 
-static void setPaletteSystem(Write<Renderer> renderer){
-    (*renderer)->setPalette(VoxelPalette{{
-        {{1, 0, 0, 1}},
-        {{0, 1, 0, 1}},
-        {{0, 0, 1, 1}},
-    }});
+
+
+static const Asset<VoxelGrid> castleAsset = AnyAsset("41973663-7ca6-425e-97c6-458b9b8e89ea");
+static const Asset<VoxelPalette> paletteAsset = AnyAsset("6f42ae5a-59d1-5df3-8720-83b8df6dd536");
+
+static void configSystem(Write<Settings> settings){
+    settings->setString("assets.io.path", SAMPLE_ASSETS_FOLDER);
 }
 
-static void spawnVoxelGridSystem(Commands commands, Write<Assets> assets){
-    auto gridAsset = assets->create(VoxelGrid{{2,2,2}, {1,2,3,1,2,3,1,2}});
-
-    commands.create(RenderableGrid{gridAsset, {-1.0f, 0.0f, -1.0f}}, LocalToWorld{});
+static void setPaletteSystem(Read<Assets> assets, Write<Renderer> renderer){
+    auto palette = assets->read(paletteAsset);
+    (*renderer)->setPalette(*palette);
 }
 
 static void spawnLightSystem(Commands commands){
@@ -47,24 +56,27 @@ static void spawnCamerasSystem(Commands commands, Write<ActiveCameras> camera){
             .add(Position{{-3.0f, 1.0f, -3.0f}})
             .add(Rotation{glm::quatLookAt(glm::normalize(glm::vec3{1.0f, 0.0f, 1.0f}), glm::vec3{0.0f, 1.0f, 0.0f})})
             .entity();
-    
-    camera->entities[1] = camera->entities[0];
-    camera->entities[2] = camera->entities[0];
 }
 
-static void configSystem(Write<Settings> settings){
-    settings->setString("assets.io.path", SAMPLE_ASSETS_FOLDER);
+static void spawnCastleSystem(Commands cmds, Read<Assets> assets){
+    auto castle = assets->read(castleAsset);
+    glm::vec3 offset = glm::vec3(castle->size().x, 0.0f, castle->size().z) / 2.0f;
+
+    cmds.create().add(RenderableGrid{castleAsset, offset}). add(LocalToWorld{});
 }
 
 int main(){
     Cubos cubos{};
     cubos.addPlugin(rendererPlugin);
-    cubos.startupSystem(setPaletteSystem).after("cubos.renderer.init");
-    cubos.startupSystem(spawnVoxelGridSystem);
+    cubos.addPlugin(assetsPlugin);
+    cubos.addPlugin(voxelsPlugin);
+
+    cubos.startupSystem(configSystem).tagged("cubos.settings");
     cubos.startupSystem(spawnLightSystem);
     cubos.startupSystem(setEnvironmentSystem);
     cubos.startupSystem(spawnCamerasSystem);
-    cubos.startupSystem(configSystem).tagged("cubos.settings");
+    cubos.startupSystem(setPaletteSystem).after("cubos.renderer.init");
+    cubos.system(spawnCastleSystem);
 
     cubos.run();
 }
