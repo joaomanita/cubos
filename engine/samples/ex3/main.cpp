@@ -89,12 +89,12 @@ static void init(Read<Assets> assets, Write<Input> input)
     input->bind(*bindings);
 }
 
-void movingSystem(Read<Input> input, Query<Write<Position>> query)
+void movingSystem(Read<Input> input, Query<Write<RenderableGrid>> query)
 {
     if (input->pressed("x-or-z")){
-        for (auto [entity, pos] : query)
+        for (auto [entity, grid] : query)
         {
-            pos->vec[0] += 1.0f;
+            grid->offset[0] += 1.0f;
         }
     }
 }
@@ -107,13 +107,13 @@ int main(){
     cubos.addPlugin(inputPlugin);
     cubos.addPlugin(transformPlugin);
 
+    cubos.startupSystem(init).tagged("cubos.assets");
     cubos.startupSystem(configSystem).tagged("cubos.settings");
     cubos.startupSystem(spawnLightSystem);
     cubos.startupSystem(setEnvironmentSystem);
     cubos.startupSystem(spawnCamerasSystem);
     cubos.startupSystem(setPaletteSystem).after("cubos.renderer.init");
-    cubos.system(spawnCastleSystem);
-    cubos.startupSystem(init).tagged("cubos.assets");
+    cubos.startupSystem(spawnCastleSystem).after("cubos.renderer.init");
     cubos.system(movingSystem).after("cubos.input.update");
 
     cubos.run();
