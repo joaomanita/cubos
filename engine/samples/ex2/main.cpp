@@ -1,20 +1,20 @@
 #include <cubos/engine/cubos.hpp>
-#include "/home/manita_vm/cubos/cubos/core/include/cubos/core/ecs/accessors.hpp"
-#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/transform/local_to_world.hpp"
-#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/transform/position.hpp"
-#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/transform/rotation.hpp"
+#include <cubos/core/ecs/accessors.hpp>
+#include <cubos/engine/transform/local_to_world.hpp>
+#include <cubos/engine/transform/position.hpp>
+#include <cubos/engine/transform/rotation.hpp>
 #include <cubos/engine/renderer/plugin.hpp>
 #include <cubos/engine/voxels/palette.hpp>
 #include <cubos/engine/voxels/grid.hpp>
 #include <cubos/engine/renderer/point_light.hpp>
 #include <cubos/engine/renderer/environment.hpp>
-#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/settings/settings.hpp"
+#include <cubos/engine/settings/settings.hpp>
 #include <cubos/engine/assets/bridges/file.hpp>
 #include <cubos/engine/assets/assets.hpp>
 #include <iostream>
-#include "/home/manita_vm/cubos/cubos/core/include/cubos/core/memory/stream.hpp"
-#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/assets/plugin.hpp"
-#include "/home/manita_vm/cubos/cubos/engine/include/cubos/engine/voxels/plugin.hpp"
+#include <cubos/core/memory/stream.hpp>
+#include <cubos/engine/assets/plugin.hpp>
+#include <cubos/engine/voxels/plugin.hpp>
 
 using namespace cubos::engine;
 using cubos::core::ecs::Commands;
