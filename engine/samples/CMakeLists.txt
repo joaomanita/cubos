@@ -51,4 +51,5 @@ make_sample(DIR "voxels" COMPONENTS ASSETS)
 make_sample(DIR "ex1" ASSETS)
 make_sample(DIR "ex2" ASSETS)
 make_sample(DIR "ex3" ASSETS)
+make_sample(DIR "ex4" COMPONENTS ASSETS)
 
